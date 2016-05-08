@@ -10,7 +10,7 @@ var Tokens = {
      "less_than", "less_than_or_equal_to", "greater_than_or_equal_to"],
   Reserved:
     [ "declare", "as", "provide", "function", "needs", "type", 
-      "if", "else", "while", "foreach", "in", "of", "new", "with", "this"]
+      "if", "else", "while", "foreach", "in", "of", "new", "with", "this"],
   Comment: 
     [">>"],
   BoolLit: 
@@ -23,10 +23,12 @@ var Tokens = {
 
 // ErrUC = Error: Unexpected Characters, ErrUR = Error: Unused Reserved
 Tokens.kinds = 
-  [{ kind:"Newline", abbr: null}, {kind:"UnexpectedChars", abbr:"ErrUC"}, {kind:"Indent", abbr:null},
-   {kind:"Id", abbr: "Id"}, {kind:"Reserved", abbr: null}, {kind:"Unused", abbr: "ErrUR"},
-   {kind:"Comment", abbr: undefined}, {kind:"Separator", abbr: null}, {kind:"Operator", abbr: null},
-   {kind:"Native", abbr: null}, {kind:"BoolLit", abbr: "Bool"}, {kind:"IntLit", abbr: "Int"},
-   {kind:"StrLit", abbr: "Str"}, {kind:"Dedent", abbr: null, display: "\\d"} ];
+  [ { kind:"Newline", abbr: null}, {kind:"UnexpectedChars", abbr:"ErrUC"},
+    {kind:"Indent", abbr:null, display: "INDENT"}, {kind:"Id", abbr: "Id"}, 
+    {kind:"Reserved", abbr: null}, {kind:"Unused", abbr: "ErrUR"}, 
+    {kind:"Comment", abbr: undefined}, {kind:"Separator", abbr: null}, 
+    {kind:"Operator", abbr: null}, {kind:"BoolLit", abbr: "Bool"},
+    {kind:"IntLit", abbr: "Int"}, {kind:"StrLit", abbr: "Str"}, 
+    {kind:"Dedent", abbr: null, display: "DEDENT"} ];
 
 module.exports = Tokens;
