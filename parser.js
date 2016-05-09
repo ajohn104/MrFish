@@ -2,36 +2,39 @@ var output = require('./output');
 var error = output.parseError;
 var ERROR = output.parseErrorObject;
 
-var Program = require("./program.js");
-var Block = require("./block.js");
-var Declaration = require("./declaration.js");
-var Assignment = require("./assignment.js");
-var IfStmt = require("./ifStmt.js");
-var ElseIf = require("./elseIf.js");
-var Else = require("./else.js");
-var While = require("./while.js");
-var ForIn = require("./forIn.js");
-var ForOf = require("./forOf.js");
-var Return = require("./return.js");
-var FuncDef = require("./functionDef.js");
-var Func = require("./function.js");
-var TypeDef = require("./typeDef.js");
-var Property = require("./property.js");
-var ObjectDef = require("./objectDef.js");
-var Call = require("./call.js");
-var ArrayLit = require("./arrayLit.js");
-var This = require("./this.js");
-var Exp = require("./exp.js");
-var Exp1 = require("./exp1.js");
-var Exp2 = require("./exp2.js");
-var Exp3 = require("./exp3.js");
-var Exp4 = require("./exp4.js");
-var Exp5 = require("./exp5.js");
-var Exp6 = require("./exp6.js");
-var Exp7 = require("./exp7.js");
-var Exp8 = require("./exp8.js");
-var Exp9 = require("./exp9.js");
-var Parenthetical = require("./parenthetical.js");
+var Program = require("./types/program.js");
+var Block = require("./types/block.js");
+var Declaration = require("./types/declaration.js");
+var Assignment = require("./types/assignment.js");
+var IfStmt = require("./types/ifStmt.js");
+var ElseIf = require("./types/elseIf.js");
+var Else = require("./types/else.js");
+var While = require("./types/while.js");
+var ForIn = require("./types/forIn.js");
+var ForOf = require("./types/forOf.js");
+var Return = require("./types/return.js");
+var FuncDef = require("./types/functionDef.js");
+var Func = require("./types/function.js");
+var TypeDef = require("./types/typeDef.js");
+var Property = require("./types/property.js");
+var ObjectDef = require("./types/objectDef.js");
+var Call = require("./types/call.js");
+var ArrayLit = require("./types/arrayLit.js");
+var This = require("./types/this.js");
+var Exp = require("./types/exp.js");
+var Exp1 = require("./types/exp1.js");
+var Exp2 = require("./types/exp2.js");
+var Exp3 = require("./types/exp3.js");
+var Exp4 = require("./types/exp4.js");
+var Exp5 = require("./types/exp5.js");
+var Exp6 = require("./types/exp6.js");
+var Exp7 = require("./types/exp7.js");
+var Exp8 = require("./types/exp8.js");
+var Parenthetical = require("./types/parenthetical.js");
+var Id = require("./types/id.js");
+var BoolLit = require("./types/boolLit.js");
+var IntLit = require("./types/intLit.js");
+var StringLit = require("./types/stringLit.js");
 
 var callback = undefined;
 
@@ -55,6 +58,7 @@ var POWEROP = "^";
 
 var TokenStreamParser = function(tokens) {
     var at = function(expected, lookahead) {
+        if(tokens.length === 0) return false;
         var lookahead = (typeof lookahead === "undefined")?0:lookahead;
         if(lookahead >= tokens.length) return false;
         if(Array.isArray(expected)) {
@@ -65,9 +69,10 @@ var TokenStreamParser = function(tokens) {
             // This would be used for ints, strings, 
             return tokens[lookahead].kind = expected.kind;
         }
-    }
+    };
 
     var match = function(expected, lookahead) {
+        if(tokens.length === 0) return null;
         var lookahead = (typeof lookahead === "undefined")?0:lookahead;
         if(lookahead >= tokens.length) return ERROR;
         if(Array.isArray(expected)) {
@@ -84,10 +89,13 @@ var TokenStreamParser = function(tokens) {
                 return tokens.shift();
             }
         }
-    }
+    };
 
-    var parseProgram = function() {
-        return new Program(parseStmt(), parseBlock())
+    this.parseProgram = function() {
+        match(NEWLINE);
+        var stmt = parseStmt();
+        var block = parseBlock();
+        return new Program(stmt, block);
     };
 
     var parseBlock = function() {
@@ -109,7 +117,7 @@ var TokenStreamParser = function(tokens) {
             return parseLoop();
         } else if (at('provide')) {
             return parseReturn();
-        } } else if (at('function')) {
+        } else if (at('function')) {
             return parseFunctionDef();
         } else if (at('type')) {
             return parseTypeDef();
@@ -121,7 +129,9 @@ var TokenStreamParser = function(tokens) {
     var parseDeclaration = function() {
         match('declare');
         var id = match(ID);
-        match('as') || match('=');
+        if (at('as')) match('as');
+        else if (at('=')) match('=');
+
         if(at('properties')) {
             return new Declaration(id, parseObject());
         } else {
@@ -417,7 +427,7 @@ var TokenStreamParser = function(tokens) {
             bracketAccess = parseExp8();
             match(']');
         }
-        return parseExp8(exp9, call, dot, bracketAccess);     // exp8 is special as it takes in call, dot, and bracketAccess, and deal with whichever it gets.
+        return new Exp8(exp9, call, dot, bracketAccess);     // exp8 is special as it takes in call, dot, and bracketAccess, and deal with whichever it gets.
     };
 
     var parseExp9 = function() {
@@ -435,9 +445,9 @@ var TokenStreamParser = function(tokens) {
             match(')');
             return new Parenthetical(exp);
         } else if(at('[')) {
-            return new parseArrayLit();
+            return parseArrayLit();
         } else {
-            return new parseThis();
+            return parseThis();
         }
     }
 
@@ -473,7 +483,7 @@ var TokenStreamParser = function(tokens) {
             }
         }
         match(']');
-        return new ArratLit(values);
+        return new ArrayLit(values);
     };
 
     var parseThis = function() {

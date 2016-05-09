@@ -517,6 +517,7 @@ var LineScanner = function() {
         if(this.tokens[this.tokens.length-1].kind === "Newline") {
             this.tokens.pop();
         }*/
+        if(this.tokens[this.tokens.length-1].kind === "Newline") this.tokens.pop();
         return this.tokens;
     };
 };

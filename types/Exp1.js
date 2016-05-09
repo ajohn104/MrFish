@@ -1,7 +1,7 @@
-// Exp1            ::= Exp2 ('and' Exp2)*
+// Exp            ::= Exp1 ('or' Exp1)*
 
-var Exp1 = function(exps) {
+var Exp = function(exps) {
 	this.exps = exps;
 }
 
-module.exports = Exp1;
+module.exports = Exp;
