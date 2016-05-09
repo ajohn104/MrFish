@@ -16,6 +16,7 @@ var scan = function(file, callback) {
         while (null !== (line = stream.read())) {
             var allValid = scanner.nextLine(line);
             if(!allValid) {
+                console.log(scanner.lineNumber);
                 error(scanner.errorToken);
                 callback(false);
                 return;
@@ -241,8 +242,11 @@ var LineScanner = function() {
                     this.tokens.push(NEWLINE(this.lineNumber));
                     break;
                 default:
-                    console.error("Scan error: impossible indent level reached.");
-                    return false;
+                    for(var i = 0; i < -1*(this.indentLevel - indentLevelCurr); i++) {
+                        tokens.push(this.tokens.push(DEDENT(this.lineNumber)));
+                    }
+                    this.tokens.push(NEWLINE(this.lineNumber));
+                    break;
             }
          } else if (this.indentLevel % 1 === 0.5) {
             switch(this.indentLevel - indentLevelCurr) {
@@ -261,13 +265,18 @@ var LineScanner = function() {
                 case 0:
                     break;
                 default:
-                    console.error("Scan error: impossible indent level reached.");
-                    return false;
+                    for(var i = 0; i < -1*(this.indentLevel - indentLevelCurr); i++) {
+                        tokens.push(this.tokens.push(DEDENT(this.lineNumber)));
+                    }
+                    this.tokens.push(NEWLINE(this.lineNumber));
+                    break;
             }
         } else {
             console.error("Scan error: impossible indent level reached.");
             return false;
         }
+
+        this.indentLevel = indentLevelCurr;
 
         while(line.length > 0) {
             while(line.charAt(0) === " ") {

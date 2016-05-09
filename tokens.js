@@ -1,6 +1,6 @@
 var Tokens = {
   Indent: 
-    ["  "],
+    ["    "],
   Separator: 
     [".", "[", "]", "(", ")", ":", ","],
   OneCharacterOperators: 

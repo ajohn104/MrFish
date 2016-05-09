@@ -9,7 +9,7 @@ var Exp5 = function(prefix, exp) {
 	this.prefix = prefix;
 	this.exp = exp;
 	this.toJS = function() {
-		return ((typeof prefix === "undefined")?"":translateOp[prefix]) + this.exp.toJS();
+		return ((typeof prefix === "undefined")?"":translateOp[prefix.lexeme]) + this.exp.toJS();
 	};
 }
 
