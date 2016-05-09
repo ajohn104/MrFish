@@ -14,6 +14,8 @@ This is a language that anyone, including those with zero experience in programm
                      |  IfStmt
                      |  Loop
                      |  Return
+                     |  FuncDef
+                     |  TypeDef
                      |  Exp
 
     Declaration     ::= 'declare' Id ('as' | '=') (Obj | Exp)
@@ -24,7 +26,9 @@ This is a language that anyone, including those with zero experience in programm
 
     TypeDef         ::= 'type' Id ('as' Id)? ':' Indent (Newline (Func | Property))* Dedent 
 
-    IfStmt          ::= 'if' '(' Exp ')' ':' Indent Block Dedent (Newline 'else' 'if'  '(' Exp ')' ':' Indent Block Dedent)* ('else' ':' Indent Block Dedent) 
+    IfStmt          ::= 'if' '(' Exp ')' ':' Indent Block Dedent (Newline ElseIf)* (Newline Else)?
+    ElseIf          ::= 'else' 'if'  '(' Exp ')' ':' Indent Block Dedent
+    Else            ::= 'else' ':' Indent Block Dedent
 
     Loop            ::= ForIn | ForOf | While
     While           ::= 'while' '(' Exp ')' ':' Indent Block Dedent
@@ -37,15 +41,15 @@ This is a language that anyone, including those with zero experience in programm
     Exp3           ::= Exp4 (AddOp Exp4)*
     Exp4           ::= Exp5 (MulOp Exp5)*
     Exp5           ::= PrefixOp? Exp6
-    Exp6           ::= PowerOp? Exp7
+    Exp6           ::= Exp7 (PowerOp Exp6)?
     Exp7           ::= ('new' Exp8 Call) | Exp8
-    Exp8           ::= Exp9 (Call | '.' Exp18)*
+    Exp8           ::= Exp9 (Call | '.' Exp8 | '[' Exp8 ']')
     Exp9           ::= Id | BoolLit | IntLit | StringLit | '(' Exp ')' | ArrayLit | This 
 
     ArrayLit        ::= '[' (Exp (',' Exp)* )? ']'
     Obj             ::= 'properties' ':' Indent Newline Property (Newline Property)* Dedent
     Prop            ::= (Id | StringLit | Intlit | BoolLit) ':' Exp
-    Call            ::= Id 'with' '(' (Id '=' Exp (',' Id '=' Exp)* )? ')'
+    Call            ::= 'with' '(' (Id '=' Exp (',' Id '=' Exp)* )? ')'
 
 ```
  

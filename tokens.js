@@ -2,7 +2,7 @@ var Tokens = {
   Indent: 
     ["  "],
   Separator: 
-    [".", "{", "}", "[", "]", "(", ")", ":", ","],
+    [".", "[", "]", "(", ")", ":", ","],
   OneCharacterOperators: 
     ["+", "-", "*", "/", "^", "="],
   WordOperators:
@@ -17,7 +17,7 @@ var Tokens = {
     ["true", "false"],
   Unused:
     ["break", "class", "const", "continue", "debugger", "delete", "export", "extends",
-     "function", "import", "instanceof", "super", "typeof", "var", "void", "with",
+     "function", "import", "instanceof", "super", "typeof", "var", "void", "with", "for",
       "return", "try", "catch", "throw", "finally", "let", "do", "switch", "case", "defaults"]
 };
 

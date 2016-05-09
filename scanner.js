@@ -1,7 +1,7 @@
 var Tokens = require('./tokens'),
     fs = require('fs'),
     byline = require('byline');
-    //error = require('./output').scanError;
+    error = require('./output').scanError;
 
  
 var scan = function(file, callback) {
