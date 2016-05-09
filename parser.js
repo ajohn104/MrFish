@@ -104,6 +104,7 @@ var TokenStreamParser = function(tokens) {
             match(NEWLINE);
             stmts.push(parseStmt());
         }
+        return new Block(stmts);
     };
 
     var parseStmt = function() {
@@ -133,7 +134,7 @@ var TokenStreamParser = function(tokens) {
         else if (at('=')) match('=');
 
         if(at('properties')) {
-            return new Declaration(id, parseObject());
+            return new Declaration(id, parseObject(id));
         } else {
             return new Declaration(id, parseExp());
         }
@@ -143,7 +144,7 @@ var TokenStreamParser = function(tokens) {
         var id = match(ID);
         match('=');
         if(at('properties')) {
-            return new Assignment(id, parseObject());
+            return new Assignment(id, parseObject(id));
         } else {
             return new Assignment(id, parseExp());
         }
@@ -324,19 +325,25 @@ var TokenStreamParser = function(tokens) {
         return new Property(left, right);
     };
 
-    var parseObject = function() {
+    var parseObject = function(id) {        // Giving it id to make life easier on me.
         match('properties');
         match(':');
         match(INDENT);
         match(NEWLINE);
         var props = [];
+        var methods = [];
+
         props.push(parseProperty());
         while(at(NEWLINE)) {
             match(NEWLINE);
-            props.push(parseProperty());
+            if(at(ID) && at(':', 1)) {
+                props.push(parseProperty());
+            } else {
+                methods.push(parseFunction());
+            }
         }
         match(DEDENT);
-        return new ObjectDef(props);
+        return new ObjectDef(props, methods, id);
     };
 
     var parseExp = function() {
@@ -360,8 +367,8 @@ var TokenStreamParser = function(tokens) {
     var parseExp2 = function() {
         var exp3s = [parseExp3()];
         while(at(COMPAREOP)) {
-            match(COMPAREOP);
-            exp3s.push(parseExp3());
+            var op = match(COMPAREOP);
+            exp3s.push({op: op, exp: parseExp3()});
         }
         return new Exp2(exp3s);
     };
@@ -369,8 +376,8 @@ var TokenStreamParser = function(tokens) {
     var parseExp3 = function() {
         var exp4s = [parseExp4()];
         while(at(ADDOP)) {
-            match(ADDOP);
-            exp4s.push(parseExp4());
+            var op = match(ADDOP);
+            exp4s.push({op: op, exp: parseExp4()});
         }
         return new Exp3(exp4s);
     };
@@ -378,8 +385,8 @@ var TokenStreamParser = function(tokens) {
     var parseExp4 = function() {
         var exp5s = [parseExp5()];
         while(at(MULOP)) {
-            match(MULOP);
-            exp5s.push(parseExp5());
+            var op = match(MULOP);
+            exp5s.push({op: op, exp: parseExp5()});
         }
         return new Exp4(exp5s);
     };
@@ -459,13 +466,13 @@ var TokenStreamParser = function(tokens) {
             var id = match(ID);
             match('=');
             var exp = parseExp();
-            valueMapping.push({prop: id, val: value});
+            valueMapping.push({prop: id, val: exp});
             while(at(',')) {
                 match(',');
-                var id = match(ID);
+                id = match(ID);
                 match('=');
-                var exp = parseExp();
-                valueMapping.push({prop: id, val: value});
+                exp = parseExp();
+                valueMapping.push({prop: id, val: exp});
             }
         }
         match(')');

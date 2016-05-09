@@ -47,7 +47,7 @@ This is a language that anyone, including those with zero experience in programm
     Exp9           ::= Id | BoolLit | IntLit | StringLit | '(' Exp ')' | ArrayLit | This 
 
     ArrayLit        ::= '[' (Exp (',' Exp)* )? ']'
-    Obj             ::= 'properties' ':' Indent Newline Property (Newline Property)* Dedent
+    Obj             ::= 'properties' ':' Indent Newline (Func | Property) (Newline (Func | Property))* Dedent
     Prop            ::= (Id | StringLit | Intlit | BoolLit) ':' Exp
     Call            ::= 'with' '(' (Id '=' Exp (',' Id '=' Exp)* )? ')'
 
